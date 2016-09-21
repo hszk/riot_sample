@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Riot odds</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="../common/js/store.min.js"></script>
+    <script src="../common/js/local_storage_odds.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <style>
+    .gridrow > div {
+      border: 1px solid gray;  
+    }
+    </style>
+
+    <div class="container-fluid">
+      <div class="row gridrow">
+        <div class="col-xs-12">
+          <header></header>
+        </div>
+      </div>
+      <div class="row gridrow">
+        <div class="col-xs-6">
+          <div id="b_tansho" style="display: none"><tansho></tansho></div>
+          <div id="b_umatan" style="display: none"><umatan></umatan></div>
+        </div>
+        <div class="col-xs-6">
+          <oddscart></oddscart>
+        </div>
+      </div>
+    </div>
+
+    <!-- riot tag -->
+    <script src="header.tag" type="riot/tag"></script>
+    <script src="tansho.tag" type="riot/tag"></script>
+    <script src="umatan.tag" type="riot/tag"></script>
+    <script src="oddscart.tag" type="riot/tag"></script>
+
+    <!-- scripts we need -->
+    <script src="https://rawgit.com/riot/riot/master/riot%2Bcompiler.min.js"></script>
+
+    <!-- mount this app -->
+    <script>
+
+      var shared_obs = riot.observable();
+      var items1 = [
+        { 'id' : 1,  'name' : 'ディープブリランテ',     'odds' : 2.2 },
+        { 'id' : 2,  'name' : 'オルフェーヴル',         'odds' : 3.1 },
+        { 'id' : 3,  'name' : 'エイシンフラッシュ',     'odds' : 5.2 },
+        { 'id' : 4,  'name' : 'ロジユニヴァース',       'odds' : 6.2 },
+        { 'id' : 5,  'name' : 'ゴドルフィンアラビアン', 'odds' : 9.4 },
+        { 'id' : 6,  'name' : 'ダーレーアラビアン',     'odds' : 11.6 },
+        { 'id' : 7,  'name' : 'バイアリーターク',       'odds' : 20.4 },
+        { 'id' : 8,  'name' : 'メジロマックイーン',     'odds' : 40.8 },
+        { 'id' : 9,  'name' : 'シンザン',               'odds' : 50.5 },
+        { 'id' : 10, 'name' : 'エクリプス',             'odds' : 94.1 },
+        { 'id' : 11, 'name' : 'ヴォルシェーブ',         'odds' : 100.2 },
+        { 'id' : 12, 'name' : 'エクリプス3',            'odds' : 120.7 },
+      ]
+
+      var items2 = [
+        { 'id' : 1,  'name' : 'ディープブリランテ',     'odds' : 8.2 },
+        { 'id' : 2,  'name' : 'オルフェーヴル',         'odds' : 11.1 },
+        { 'id' : 3,  'name' : 'エイシンフラッシュ',     'odds' : 15.2 },
+        { 'id' : 4,  'name' : 'ロジユニヴァース',       'odds' : 25.2 },
+        { 'id' : 5,  'name' : 'ゴドルフィンアラビアン', 'odds' : 41.4 },
+        { 'id' : 6,  'name' : 'ダーレーアラビアン',     'odds' : 41.6 },
+        { 'id' : 7,  'name' : 'バイアリーターク',       'odds' : 50.4 },
+        { 'id' : 8,  'name' : 'メジロマックイーン',     'odds' : 60.8 },
+        { 'id' : 9,  'name' : 'シンザン',               'odds' : 120.5 },
+        { 'id' : 10, 'name' : 'エクリプス',             'odds' : 200.1 },
+        { 'id' : 11, 'name' : 'ヴォルシェーブ',         'odds' : 300.2 },
+        { 'id' : 12, 'name' : 'エクリプス3',            'odds' : 400.7 },
+      ]
+
+      riot.compile(function() {
+
+        riot.route.base('/')
+        riot.mount('header')
+        riot.mount('#b_tansho', 'tansho', {obs: shared_obs, item: items1})
+        riot.mount('#b_umatan', 'umatan', {obs: shared_obs, item: items2})
+        riot.mount('oddscart', {obs: shared_obs})
+        riot.route.start(true)
+
+        shared_obs.trigger('render_odds_tansho', {method: 'tansho'});
+        $('#b_tansho').css('display','block');
+
+        riot.route('..', function() {
+            console.log('riot.route');
+
+            var q = riot.route.query();
+
+            console.log('q: %O',q);
+
+            shared_obs.trigger('render_odds_umatan' , {method: q.method});
+            q.method.replace(/#/,'');
+            shared_obs.trigger( q.method, {method: q.method, id: q.id});
+
+            var p_id = q.method;
+	    $('[id^=b_]').css('display','none');
+            $('#'+p_id).css('display','block');
+
+        });
+
+      });
+
+    </script>
+
+  </body>
+
+</html>
